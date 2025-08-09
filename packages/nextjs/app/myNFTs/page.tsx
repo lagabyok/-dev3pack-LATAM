@@ -11,7 +11,6 @@ import nftsMetadata from "~~/utils/simpleNFT/nftsMetadata";
 
 const MyNFTs: NextPage = () => {
   const { address: connectedAddress, isConnected, isConnecting } = useAccount();
-
   const { writeContractAsync } = useScaffoldWriteContract({ contractName: "YourCollectible" });
 
   const { data: tokenIdCounter } = useScaffoldReadContract({
@@ -21,18 +20,16 @@ const MyNFTs: NextPage = () => {
   });
 
   const handleMintItem = async () => {
-    // circle back to the zero item if we've reached the end of the array
     if (tokenIdCounter === undefined) return;
 
     const tokenIdCounterNumber = Number(tokenIdCounter);
     const currentTokenMetaData = nftsMetadata[tokenIdCounterNumber % nftsMetadata.length];
-    const notificationId = notification.loading("Uploading to IPFS");
+    const notificationId = notification.loading("🚀 Subiendo a IPFS...");
     try {
       const uploadedItem = await addToIPFS(currentTokenMetaData);
 
-      // First remove previous loading notification and then show success notification
       notification.remove(notificationId);
-      notification.success("Metadata uploaded to IPFS");
+      notification.success("✅ Metadata subida a IPFS");
 
       await writeContractAsync({
         functionName: "mintItem",
@@ -45,25 +42,102 @@ const MyNFTs: NextPage = () => {
   };
 
   return (
-    <>
-      <div className="flex items-center flex-col pt-10">
-        <div className="px-5">
-          <h1 className="text-center mb-8">
-            <span className="block text-4xl font-bold">My NFTs</span>
-          </h1>
-        </div>
-      </div>
-      <div className="flex justify-center">
+    <div
+      style={{
+        backgroundColor: "#0d0d0d",
+        minHeight: "100vh",
+        padding: "2rem",
+        color: "#fff",
+        fontFamily: "'Poppins', sans-serif",
+      }}
+    >
+      {/* Header con logo y título */}
+      <header
+        style={{
+          display: "flex",
+          alignItems: "center",
+          marginBottom: "2rem",
+        }}
+      >
+        <div
+          style={{
+            width: "50px",
+            height: "50px",
+            backgroundColor: "#ffcc00",
+            borderRadius: "50%",
+            marginRight: "1rem",
+          }}
+        />
+        <h1
+          style={{
+            fontSize: "2rem",
+            fontWeight: "bold",
+            color: "#ff3366",
+            textShadow: "2px 2px #00ffff",
+          }}
+        >
+          NFTs
+        </h1>
+      </header>
+
+      {/* Texto descriptivo */}
+      <p
+        style={{
+          fontSize: "1.2rem",
+          marginBottom: "2rem",
+          maxWidth: "600px",
+          lineHeight: "1.6",
+        }}
+      >
+        Bienvenido/a a tu colección personal de NFTs únicos y vibrantes. Aquí podrás ver, gestionar y mostrar tus piezas
+        digitales con estilo.
+      </p>
+
+      {/* Botón Mint */}
+      <div style={{ marginBottom: "2rem" }}>
         {!isConnected || isConnecting ? (
           <RainbowKitCustomConnectButton />
         ) : (
-          <button className="btn btn-secondary" onClick={handleMintItem}>
-            Mint NFT
+          <button
+            onClick={handleMintItem}
+            style={{
+              padding: "12px 30px",
+              fontSize: "1.1rem",
+              fontWeight: "bold",
+              borderRadius: "12px",
+              background: "linear-gradient(90deg, #ff0080, #00f0ff, #ffe600)",
+              color: "transparent",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              border: "4px solid",
+              borderImageSlice: 1,
+              borderWidth: "4px",
+              borderImageSource: "linear-gradient(90deg, #ff0080, #00f0ff, #ffe600)",
+              cursor: "pointer",
+              boxShadow: "0 0 5px #ff6ec4",
+              transition: "transform 0.2s ease",
+            }}
+            onMouseEnter={e => (e.currentTarget.style.transform = "scale(1.05)")}
+            onMouseLeave={e => (e.currentTarget.style.transform = "scale(1)")}
+          >
+            🚀 Mint NFT
           </button>
         )}
       </div>
-      <MyHoldings />
-    </>
+
+      {/* Lista de NFTs con borde y sombra pop */}
+      <div
+        style={{
+          backgroundColor: "#1a1a1a",
+          border: "4px solid #ff6ec4",
+          borderRadius: "15px",
+          padding: "1rem",
+          boxShadow: "0 0 20px #00ffff",
+        }}
+      >
+        <MyHoldings />
+      </div>
+    </div>
   );
 };
 
